@@ -1,0 +1,590 @@
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    color: #193e8f;
+}
+
+body {
+    background-color: #eee;
+}
+
+/* ===================== NAV (igual ao index) ===================== */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.logo img {
+    width: 150px;
+}
+
+.elem ul {
+    display: flex;
+    gap: 25px;
+}
+
+.elem ul a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.elem ul a li {
+    list-style: none;
+    transition: color 0.3s ease;
+}
+
+.elem ul a li:hover {
+    color: #ea3e44;
+}
+
+.b_login {
+    padding: 10px 30px;
+    background-color: #193e8f;
+    font-size: 17px;
+    border: none;
+    border-radius: 25px;
+    color: #eee;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.5s ease;
+}
+
+.b_login:hover {
+    background-color: #ea3e44;
+}
+
+/* ===================== MAIN ===================== */
+main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 16px 60px;
+}
+
+.saudacao {
+    margin-bottom: 30px;
+}
+
+.saudacao h1 {
+    font-size: 40px;
+    color: #193e8f;
+}
+
+.saudacao p {
+    color: #333;
+    font-size: 18px;
+    margin-top: 6px;
+}
+
+.titulo-secao {
+    font-size: 26px;
+    margin-bottom: 18px;
+}
+
+/* ===================== CONTINUAR DE ONDE PAROU ===================== */
+.continuar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background-color: #193e8f;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.continuar .rotulo {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #cdd8f2;
+    margin-bottom: 6px;
+}
+
+.continuar h2 {
+    color: #fff;
+    font-size: 28px;
+}
+
+.continuar p {
+    color: #cdd8f2;
+    margin-top: 4px;
+    font-size: 16px;
+}
+
+.btn-continuar {
+    padding: 14px 40px;
+    background-color: #ea3e44;
+    color: #fff;
+    font-weight: bold;
+    font-size: 17px;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.btn-continuar:hover {
+    background-color: #fff;
+    color: #193e8f;
+    transform: translateY(-2px);
+}
+
+/* ===================== GRADE DE CURSOS ===================== */
+.grade-cursos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.card-curso {
+    background-color: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(25, 62, 143, 0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-curso:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(25, 62, 143, 0.15);
+}
+
+.card-img {
+    background-color: #f2f5fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    height: 150px;
+}
+
+.card-img img {
+    max-height: 100%;
+    max-width: 60%;
+    object-fit: contain;
+}
+
+.card-corpo {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-corpo h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+/* ===================== BARRA DE PROGRESSO ===================== */
+.progresso-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.barra {
+    width: 100%;
+    height: 10px;
+    background-color: #e2e8f5;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.barra-preenchida {
+    height: 100%;
+    background-color: #193e8f;
+    border-radius: 6px;
+    transition: width 0.6s ease;
+}
+
+/* ===================== BOTÕES DE CURSO ===================== */
+.btn-curso {
+    display: inline-block;
+    text-align: center;
+    padding: 12px 20px;
+    background-color: #193e8f;
+    color: #eee;
+    font-weight: bold;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+}
+
+.btn-curso:hover {
+    background-color: #ea3e44;
+}
+
+.btn-curso.concluido {
+    background-color: #2e8b57;
+}
+
+.btn-curso.concluido:hover {
+    background-color: #ea3e44;
+}
+
+.btn-curso.secundario {
+    background-color: #c0c0c0;
+    color: #193e8f;
+}
+
+.btn-curso.secundario:hover {
+    background-color: #a9a9a9;
+}
+
+/* ===================== PÁGINA DE AULA ===================== */
+.aula-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.aula-menu {
+    background-color: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(25, 62, 143, 0.08);
+    position: sticky;
+    top: 90px;
+}
+
+.aula-menu h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+}
+
+.aula-menu ol {
+    list-style: none;
+}
+
+.aula-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.aula-menu li a:hover {
+    background-color: #f2f5fc;
+}
+
+.aula-menu li.ativa a {
+    background-color: #f2f5fc;
+    color: #193e8f;
+    font-weight: bold;
+}
+
+.marcador {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 50%;
+    border: 2px solid #c0c0c0;
+    display: inline-block;
+}
+
+.marcador.ok {
+    background-color: #2e8b57;
+    border-color: #2e8b57;
+}
+
+.aula-conteudo {
+    background-color: #fff;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 4px 14px rgba(25, 62, 143, 0.08);
+}
+
+.aula-breadcrumb {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 12px;
+}
+
+.aula-breadcrumb a {
+    color: #193e8f;
+    text-decoration: none;
+}
+
+.aula-breadcrumb a:hover {
+    color: #ea3e44;
+}
+
+.aula-conteudo h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.aula-texto {
+    color: #333;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.aula-texto p {
+    color: #333;
+    margin-bottom: 14px;
+}
+
+.aula-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* ===================== ADMIN ===================== */
+/* Cartões de resumo */
+.resumo-admin {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card-num {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid #193e8f;
+}
+
+.card-num .num {
+    display: block;
+    font-size: 38px;
+    font-weight: 700;
+    color: #193e8f;
+    line-height: 1.1;
+}
+
+.card-num .rot {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Barra de busca */
+.barra-busca {
+    margin-bottom: 24px;
+}
+
+.barra-busca form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.barra-busca input {
+    flex: 1;
+    min-width: 220px;
+    padding: 12px 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+.barra-busca input:focus {
+    outline: none;
+    border-color: #193e8f;
+}
+
+.btn-buscar {
+    background: #193e8f;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-buscar:hover { background: #142f6d; }
+
+.btn-limpar {
+    color: #193e8f;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 12px 10px;
+}
+
+.btn-limpar:hover { text-decoration: underline; }
+
+/* Tabela de progresso */
+.tabela-wrap {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+}
+
+.tabela-admin {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.tabela-admin th,
+.tabela-admin td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.tabela-admin thead th {
+    background: #193e8f;
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+}
+
+.tabela-admin .col-curso,
+.tabela-admin .col-total { text-align: center; }
+
+.tabela-admin tbody tr:hover { background: #f5f7fb; }
+
+.cel-aluno { min-width: 180px; }
+
+.nome-aluno {
+    display: block;
+    font-weight: 500;
+    color: #222;
+}
+
+.user-aluno {
+    display: block;
+    font-size: 13px;
+    color: #888;
+}
+
+.tag-adm {
+    display: inline-block;
+    margin-top: 4px;
+    background: #ea3e44;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.cel-curso { text-align: center; min-width: 110px; }
+
+.mini-barra {
+    height: 8px;
+    background: #e6e6e6;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 auto 4px;
+    max-width: 90px;
+}
+
+.mini-preenchida {
+    height: 100%;
+    background: #193e8f;
+    border-radius: 4px;
+}
+
+.mini-preenchida.ok { background: #2e9e5b; }
+
+.mini-texto {
+    font-size: 12px;
+    color: #666;
+}
+
+.cel-total {
+    text-align: center;
+    font-weight: 700;
+    color: #193e8f;
+    font-size: 16px;
+}
+
+.vazio {
+    padding: 30px;
+    text-align: center;
+    color: #888;
+}
+
+/* ===================== RESPONSIVO ===================== */
+@media (max-width: 768px) {
+    .logo img { width: 100px; }
+
+    .saudacao h1 { font-size: 30px; }
+
+    .continuar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-continuar { width: 100%; text-align: center; }
+
+    .aula-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .aula-menu {
+        position: static;
+    }
+
+    .resumo-admin {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .card-num .num { font-size: 30px; }
+}

@@ -1,0 +1,137 @@
+.no-select {
+  -webkit-user-select: none;  /* Chrome, Safari, Opera */
+  -moz-user-select: none;  /* Firefox */
+  -ms-user-select: none;  /* IE10, IE11 */
+  user-select: none;  /* Standard */
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #eee;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: #ea3e44;
+}
+
+#login {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.name input {
+    border-radius: 15px;
+    border: none;
+    width: 250px;
+    height: 40px;
+    padding-left: 15px;
+    background-color: #c0c0c0;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.usuario input {
+    border-radius: 15px;
+    border: none;
+    width: 250px;
+    height: 40px;
+    padding-left: 15px;
+    background-color: #cecece;
+    color: #333;
+}
+
+.senha input {
+    border-radius: 15px;
+    border: none;
+    width: 250px;
+    height: 40px;
+    padding-left: 15px;
+    background-color: #cecece;
+    color: #333;
+    margin-top: 15px;
+}
+
+.entrar{
+  padding-top: 15px;
+}
+
+.entrar input {
+    cursor: pointer;
+    width: 120px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background-color: #193e8f;
+    transition: background-color 0.5s ease;
+    color: #eee;
+}
+
+.entrar input:hover{
+    background-color: #ea3e44;
+    transition: background-color 0.5s ease;
+}
+
+input:focus {
+    outline: none;
+    border: 2px solid #193e8f; /* Adiciona uma borda azul ao foco */
+}
+
+input::placeholder {
+    color: #193e8f;
+}
+
+h1 {
+    color: #193e8f;
+    padding-top: 100px;
+}
+
+.caixa {
+    margin-top: 65px;
+}
+
+.caixa img {
+    width: 400px;
+}
+
+input:focus {
+    outline: none;
+}
+
+/* Botão Voltar com o mesmo estilo do b_login */
+.b_voltar{
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    padding: 10px 30px;
+    background-color: #193e8f;
+    font-size: 17px;
+    border: none;
+    outline: none;
+    border-radius: 25px;
+    color: #eee;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.5s ease;
+}
+
+.b_voltar:hover{
+    background-color: #ea3e44;
+}
+
+/* Mensagem de erro no login */
+.erro-login {
+    color: #ea3e44;
+    background-color: #fdecec;
+    border: 1px solid #ea3e44;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 10px auto 0;
+    max-width: 265px;
+    font-size: 14px;
+    font-weight: bold;
+}
