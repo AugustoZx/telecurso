@@ -1,3 +1,7 @@
+<?php
+session_start();
+$logado = isset($_SESSION['aluno_id']);
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -19,7 +23,11 @@
             </ul>
         </div>
 
-        <a class="b_login" href="login.php">Login</a>
+        <?php if ($logado): ?>
+            <a class="b_login" href="logout.php">Sair</a>
+        <?php else: ?>
+            <a class="b_login" href="login.php">Login</a>
+        <?php endif; ?>
     </nav>
 
     <main>
