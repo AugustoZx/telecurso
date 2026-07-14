@@ -135,27 +135,27 @@
     }
 
     // Cor azul-marinho do modelo
-    $pdf->SetTextColor(23, 41, 107);
+    $pdf->SetTextColor(27, 62, 147);
 
     // Nome do aluno (centralizado sobre a linha)
     $pdf->SetFont('Arial', 'B', 22);
     $nome = enc($aluno['nome']);
     $largura_nome = $pdf->GetStringWidth($nome);
     $pdf->Text((297 - $largura_nome) / 2, 71.4, $nome);
-
+    
     // Nome do curso
     $pdf->SetFont('Arial', 'B', 13);
-    $pdf->Text(129.8, 81.6, enc($CURSO_NOME));
+    $pdf->Text(150, 81.6, enc($CURSO_NOME));
 
     // Carga horária
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->Text(183.4, 92.2, enc($CARGA_HORARIA));
 
     // Data de conclusão: dia / mês / ano (nos espaços do modelo)
-    $pdf->SetFont('Arial', '', 13);
-    $pdf->Text(136.9, 107.3, enc($dia));
-    $pdf->Text(166.5, 107.3, enc($mes));
-    $pdf->Text(197.6, 107.3, enc($ano));
+    $pdf->SetFont('Arial', 'B', 13);
+    $pdf->Text(136.9, 110, enc($dia));
+    $pdf->Text(160, 110, enc($mes));
+    $pdf->Text(196.5, 110, enc($ano));
 
     /* -------- Salva o arquivo no servidor -------- */
     $nome_arquivo = 'certificado_' . $codigo . '.pdf';

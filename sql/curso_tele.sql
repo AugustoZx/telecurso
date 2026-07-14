@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 14/07/2026 às 18:55
+-- Tempo de geração: 14/07/2026 às 20:07
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -37,6 +37,13 @@ CREATE TABLE `alunos` (
   `adm` tinyint(1) NOT NULL DEFAULT 0,
   `aula` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `alunos`
+--
+
+INSERT INTO `alunos` (`id`, `user`, `pass`, `nome`, `cpf`, `data_nasc`, `adm`, `aula`) VALUES
+(1, 'adm_teste', '$2y$10$IGWmuABbKyyWd2KKd1CJi.38EHf9ZFPsqTH8x6UCLsMlEcaA/PLRO', 'Teste do Teste', '000.000.000-00', '2000-01-01', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -101,19 +108,19 @@ ALTER TABLE `certificados`
 -- AUTO_INCREMENT de tabela `alunos`
 --
 ALTER TABLE `alunos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `aulas_concluidas`
 --
 ALTER TABLE `aulas_concluidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
 
 --
 -- AUTO_INCREMENT de tabela `certificados`
 --
 ALTER TABLE `certificados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Restrições para tabelas despejadas
