@@ -156,6 +156,21 @@
         $cadastro_msg  = $_GET['exclusao'] === 'ok' ? 'Aluno excluído com sucesso!' : 'Não foi possível excluir o aluno.';
         $cadastro_erro = $_GET['exclusao'] !== 'ok';
     }
+    if (isset($_GET['cert'])) {
+        switch ($_GET['cert']) {
+            case 'incompleto':
+                $cadastro_msg  = 'O aluno ainda não concluiu a última aula do curso. Certificado indisponível.';
+                $cadastro_erro = true;
+                break;
+            case 'erro':
+                $cadastro_msg  = 'Não foi possível gerar o certificado. Verifique se a biblioteca FPDF está instalada.';
+                $cadastro_erro = true;
+                break;
+            default:
+                $cadastro_msg  = 'Certificado gerado com sucesso!';
+                $cadastro_erro = false;
+        }
+    }
 
     /* -------- Filtro de busca por nome/usuário (opcional) -------- */
     $busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
@@ -190,6 +205,19 @@
     if ($res) {
         while ($l = $res->fetch_assoc()) {
             $prog[$l['aluno_id']][$l['curso_id']] = (int)$l['concluidas'];
+        }
+    }
+
+    /* -------- Alunos que concluíram a ÚLTIMA aula do curso de Excel --------
+       Regra do certificado: curso_id = 'excel' e aula_num = 3.
+       Guardamos a data de conclusão para exibir no certificado. */
+    $concluiu_excel = []; // aluno_id => data de conclusão
+    $rc = $conexao->query("SELECT aluno_id, `data`
+                           FROM aulas_concluidas
+                           WHERE curso_id = 'excel' AND aula_num = 3");
+    if ($rc) {
+        while ($l = $rc->fetch_assoc()) {
+            $concluiu_excel[(int)$l['aluno_id']] = $l['data'];
         }
     }
 
@@ -358,6 +386,21 @@
         .btn-editar:hover { background: #2457b8; }
         .btn-excluir { background: #c53434; }
         .btn-excluir:hover { background: #a12626; }
+
+        /* Botão de certificado (link) */
+        .btn-certificado {
+            background: #c98a1b;
+            text-decoration: none;
+            display: inline-block;
+            line-height: normal;
+        }
+        .btn-certificado:hover { background: #a9720f; }
+        /* Estado desabilitado (aluno ainda não concluiu o curso) */
+        .btn-certificado-off {
+            background: #c9c9c9;
+            color: #6b6b6b;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="no-select">
@@ -485,6 +528,17 @@
                                             data-nasc="<?= htmlspecialchars($aluno['data_nasc'], ENT_QUOTES) ?>"
                                             data-adm="<?= (int)$aluno['adm'] ?>"
                                             onclick="abrirModalEditar(this)">Editar</button>
+
+                                        <?php if (isset($concluiu_excel[(int)$aluno['id']])): ?>
+                                            <a class="btn-acao btn-certificado"
+                                               href="certificado.php?aluno_id=<?= (int)$aluno['id'] ?>"
+                                               target="_blank" rel="noopener"
+                                               title="Gerar certificado de conclusão">Certificado</a>
+                                        <?php else: ?>
+                                            <button type="button" class="btn-acao btn-certificado-off"
+                                                    title="O aluno ainda não concluiu a última aula do curso"
+                                                    disabled>Certificado</button>
+                                        <?php endif; ?>
 
                                         <form method="post" action="admin.php" class="form-excluir"
                                             onsubmit="return confirmarExclusao('<?= htmlspecialchars(addslashes($aluno['nome']), ENT_QUOTES) ?>');">
