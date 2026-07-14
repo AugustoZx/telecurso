@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 06/07/2026 às 14:22
+-- Tempo de geração: 14/07/2026 às 18:55
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -38,13 +38,6 @@ CREATE TABLE `alunos` (
   `aula` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Despejando dados para a tabela `alunos`
---
-
-INSERT INTO `alunos` (`id`, `user`, `pass`, `nome`, `cpf`, `data_nasc`, `adm`, `aula`) VALUES
-(1, 'adm_augusto', '1212', 'Augusto Oliveira de Araújo', '000.000.000-00', '2004-05-27', 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -57,6 +50,21 @@ CREATE TABLE `aulas_concluidas` (
   `curso_id` varchar(50) NOT NULL,
   `aula_num` int(11) NOT NULL,
   `data` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `certificados`
+--
+
+CREATE TABLE `certificados` (
+  `id` int(11) NOT NULL,
+  `codigo` varchar(30) NOT NULL,
+  `aluno_id` int(11) NOT NULL,
+  `curso_id` varchar(50) NOT NULL,
+  `data_emissao` datetime DEFAULT current_timestamp(),
+  `arquivo` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -78,6 +86,14 @@ ALTER TABLE `aulas_concluidas`
   ADD UNIQUE KEY `uniq_aluno_curso_aula` (`aluno_id`,`curso_id`,`aula_num`);
 
 --
+-- Índices de tabela `certificados`
+--
+ALTER TABLE `certificados`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `codigo` (`codigo`),
+  ADD KEY `aluno_id` (`aluno_id`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -85,13 +101,19 @@ ALTER TABLE `aulas_concluidas`
 -- AUTO_INCREMENT de tabela `alunos`
 --
 ALTER TABLE `alunos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `aulas_concluidas`
 --
 ALTER TABLE `aulas_concluidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
+
+--
+-- AUTO_INCREMENT de tabela `certificados`
+--
+ALTER TABLE `certificados`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restrições para tabelas despejadas
@@ -102,6 +124,12 @@ ALTER TABLE `aulas_concluidas`
 --
 ALTER TABLE `aulas_concluidas`
   ADD CONSTRAINT `fk_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `alunos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `certificados`
+--
+ALTER TABLE `certificados`
+  ADD CONSTRAINT `certificados_ibfk_1` FOREIGN KEY (`aluno_id`) REFERENCES `alunos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
