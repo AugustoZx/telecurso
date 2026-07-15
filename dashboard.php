@@ -13,6 +13,22 @@
     $aluno_id   = $_SESSION['aluno_id'];
     $aluno_nome = $_SESSION['aluno_nome'] ?? $_SESSION['aluno_user'] ?? 'Aluno';
 
+    /* -------- Frases motivacionais --------
+       Adicione novas frases aqui, uma por linha, entre aspas simples e vírgula. */
+    $FRASES_MOTIVACIONAIS = [
+        'Continue seus estudos de onde parou.',
+        'Cada aula concluída é um passo mais perto do seu objetivo.',
+        'O conhecimento é a única riqueza que ninguém pode tirar de você.',
+        'Grandes conquistas começam com a decisão de tentar.',
+        'Aprender hoje é construir o seu amanhã.',
+        'A persistência é o caminho do êxito.',
+        'Você é capaz de mais do que imagina. Siga em frente!',
+        'Pequenos progressos diários levam a grandes resultados.',
+    ];
+
+    /* Escolhe uma frase aleatória a cada carregamento da página */
+    $frase_do_dia = $FRASES_MOTIVACIONAIS[array_rand($FRASES_MOTIVACIONAIS)];
+
     /* -------- Busca o progresso do aluno no banco --------
        Retorna, por curso: quantas aulas concluiu e qual foi a última. */
     $progresso = []; // curso_id => ['concluidas' => n, 'ultima_aula' => n, 'ultimo_acesso' => data]
@@ -123,7 +139,7 @@
         <!-- Saudação -->
         <header class="saudacao">
             <h1>Olá, <?= htmlspecialchars($aluno_nome) ?>!</h1>
-            <p>Continue seus estudos de onde parou.</p>
+            <p><?= htmlspecialchars($frase_do_dia) ?></p>
         </header>
 
         <!-- Aviso de curso bloqueado -->
