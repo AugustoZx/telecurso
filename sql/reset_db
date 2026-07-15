@@ -1,0 +1,13 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Apaga os dados (DELETE respeita a desativação das foreign keys)
+DELETE FROM aulas_concluidas;
+DELETE FROM certificados;
+DELETE FROM alunos;
+
+-- Zera os contadores manualmente (DELETE não reseta sozinho, diferente do TRUNCATE)
+ALTER TABLE aulas_concluidas AUTO_INCREMENT = 1;
+ALTER TABLE certificados AUTO_INCREMENT = 1;
+ALTER TABLE alunos AUTO_INCREMENT = 1;
+
+SET FOREIGN_KEY_CHECKS = 1;

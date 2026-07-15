@@ -1,0 +1,4 @@
+-- Descobre qual seria o próximo ID e ajusta o contador
+SET @next_id = (SELECT IFNULL(MAX(id), 0) + 1 FROM aulas_concluidas);
+SET @sql = CONCAT('ALTER TABLE aulas_concluidas AUTO_INCREMENT = ', @next_id);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
