@@ -190,3 +190,5 @@
         header('Content-Length: ' . filesize($caminho_abs));
         readfile($caminho_abs);
     }
+
+    

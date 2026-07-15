@@ -123,7 +123,7 @@
         <!-- Saudação -->
         <header class="saudacao">
             <h1>Olá, <?= htmlspecialchars($aluno_nome) ?>!</h1>
-            <p>Continue seus estudos de onde parou ou escolha um novo curso.</p>
+            <p>Continue seus estudos de onde parou.</p>
         </header>
 
         <!-- Aviso de curso bloqueado -->
@@ -156,7 +156,7 @@
 
         <!-- Lista de cursos -->
         <section class="cursos" aria-label="Seus cursos">
-            <h2 class="titulo-secao">Seus cursos</h2>
+            <h2 class="titulo-secao">Módulos</h2>
 
             <div class="grade-cursos">
                 <?php foreach ($CURSOS as $curso_id => $curso):
@@ -225,6 +225,16 @@
             </div>
         </section>
     </main>
+    <script>
+    document.addEventListener('contextmenu', function(e) {
+    e.preventDefault(); // Impede o menu de contexto padrão
+    });
 
+    document.addEventListener('keydown', function(e) {
+    if (e.keyCode === 123) { // Código da tecla F12
+    e.preventDefault();
+    }
+    });
+    </script>
 </body>
 </html>
