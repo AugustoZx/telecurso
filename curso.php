@@ -12,12 +12,21 @@
 
     $aluno_id = $_SESSION['aluno_id'];
 
+    // Progresso do aluno em todos os cursos (usado para o bloqueio sequencial)
+    $progresso = buscar_progresso($conexao, $aluno_id);
+
     /* -------- Ação: marcar aula como concluída (POST) -------- */
     if ($_SERVER['REQUEST_METHOD'] === 'POST'
         && isset($_POST['concluir'], $_POST['curso'], $_POST['aula'])) {
 
         $curso_id = $_POST['curso'];
         $aula_num = (int) $_POST['aula'];
+
+        // Bloqueio: não deixa concluir aula de curso que ainda não foi liberado
+        if (!curso_liberado($CURSOS, $curso_id, $progresso)) {
+            header('Location: dashboard.php?bloqueado=' . urlencode($curso_id));
+            exit;
+        }
 
         // Só grava se o curso e a aula realmente existirem
         if (isset($CURSOS[$curso_id]) && $aula_num >= 1
@@ -50,6 +59,13 @@
         header('Location: dashboard.php');
         exit;
     }
+
+    // Bloqueio: curso trancado volta para o painel com aviso
+    if (!curso_liberado($CURSOS, $curso_id, $progresso)) {
+        header('Location: dashboard.php?bloqueado=' . urlencode($curso_id));
+        exit;
+    }
+
     $curso = $CURSOS[$curso_id];
     $total = count($curso['aulas']);
     if ($aula_num < 1)      $aula_num = 1;
@@ -78,6 +94,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="shortcut icon" type="imagex/png" href="https://salesianossp.org.br/ositaquera/wp-content/uploads/2024/03/wp-favicon-pvi-os-150x150.webp">
     <title><?= htmlspecialchars($curso['nome']) ?> — Aula <?= $aula_num ?></title>
 </head>
 <body class="no-select">

@@ -243,6 +243,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="shortcut icon" type="imagex/png" href="https://salesianossp.org.br/ositaquera/wp-content/uploads/2024/03/wp-favicon-pvi-os-150x150.webp">
     <title>Administração</title>
 
     <!-- Estilos do botão Cadastrar e do modal de cadastro -->
@@ -441,7 +442,7 @@
             </div>
             <div class="card-num">
                 <span class="num"><?= count($CURSOS) ?></span>
-                <span class="rot">Cursos disponíveis</span>
+                <span class="rot">Módulos disponíveis</span>
             </div>
         </section>
 

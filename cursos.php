@@ -108,4 +108,64 @@ $CURSOS = [
 function total_aulas($CURSOS, $curso_id) {
     return isset($CURSOS[$curso_id]) ? count($CURSOS[$curso_id]['aulas']) : 0;
 }
+
+/* ============================================================
+   BLOQUEIO SEQUENCIAL DOS CURSOS
+   ------------------------------------------------------------
+   A ordem dos cursos é a mesma ordem em que aparecem no
+   array $CURSOS acima. O aluno só desbloqueia o próximo curso
+   depois de concluir TODAS as aulas do curso anterior.
+   O primeiro curso está sempre liberado.
+   ============================================================ */
+
+// Verifica se um curso foi 100% concluído, com base no progresso
+function curso_concluido($CURSOS, $curso_id, $progresso) {
+    $total = total_aulas($CURSOS, $curso_id);
+    if ($total <= 0) return false;
+    $concluidas = isset($progresso[$curso_id]) ? (int)$progresso[$curso_id]['concluidas'] : 0;
+    return $concluidas >= $total;
+}
+
+// Verifica se um curso está liberado para o aluno.
+// Liberado = é o primeiro curso OU o curso anterior já foi concluído.
+function curso_liberado($CURSOS, $curso_id, $progresso) {
+    $ordem = array_keys($CURSOS);
+    $idx   = array_search($curso_id, $ordem, true);
+
+    if ($idx === false) return false; // curso não existe
+    if ($idx === 0)      return true;  // primeiro curso sempre liberado
+
+    $curso_anterior = $ordem[$idx - 1];
+    return curso_concluido($CURSOS, $curso_anterior, $progresso);
+}
+
+// Nome do curso anterior (útil para mensagens de bloqueio). Retorna null se for o primeiro.
+function curso_anterior_nome($CURSOS, $curso_id) {
+    $ordem = array_keys($CURSOS);
+    $idx   = array_search($curso_id, $ordem, true);
+    if ($idx === false || $idx === 0) return null;
+    $anterior = $ordem[$idx - 1];
+    return $CURSOS[$anterior]['nome'] ?? null;
+}
+
+// Busca no banco o progresso do aluno em todos os cursos.
+// Retorna: curso_id => ['concluidas' => n, 'ultima_aula' => n, 'ultimo_acesso' => data]
+function buscar_progresso($conexao, $aluno_id) {
+    $progresso = [];
+    $sql = "SELECT curso_id,
+                   COUNT(*)      AS concluidas,
+                   MAX(aula_num) AS ultima_aula,
+                   MAX(data)     AS ultimo_acesso
+            FROM aulas_concluidas
+            WHERE aluno_id = ?
+            GROUP BY curso_id";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $aluno_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($linha = $res->fetch_assoc()) {
+        $progresso[$linha['curso_id']] = $linha;
+    }
+    return $progresso;
+}
 ?>
