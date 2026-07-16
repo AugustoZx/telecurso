@@ -42,14 +42,17 @@
         $abrir_modal = true;
 
         $novo_user = trim($_POST['user'] ?? '');
-        $novo_pass = $_POST['pass'] ?? '';
         $novo_nome = trim($_POST['nome'] ?? '');
         $novo_cpf  = trim($_POST['cpf'] ?? '');
         $novo_nasc = $_POST['data_nasc'] ?? '';
         $novo_adm  = isset($_POST['adm']) ? 1 : 0;
 
+        /* Senha padrão para todo cadastro feito pelo admin.
+           O aluno é obrigado a trocá-la no primeiro login (trocar_senha = 1). */
+        $novo_pass = '123';
+
         /* -------- Validação básica -------- */
-        if ($novo_user === '' || $novo_pass === '' || $novo_nome === '' || $novo_cpf === '' || $novo_nasc === '') {
+        if ($novo_user === '' || $novo_nome === '' || $novo_cpf === '' || $novo_nasc === '') {
             $cadastro_erro = true;
             $cadastro_msg  = 'Preencha todos os campos obrigatórios.';
         } elseif (!cpf_valido($novo_cpf)) {
@@ -67,8 +70,8 @@
                 $cadastro_msg  = 'Esse nome de usuário já está em uso.';
             } else {
                 $ins = $conexao->prepare(
-                    "INSERT INTO alunos (user, pass, nome, cpf, data_nasc, adm, aula)
-                     VALUES (?, ?, ?, ?, ?, ?, 1)"
+                    "INSERT INTO alunos (user, pass, trocar_senha, nome, cpf, data_nasc, adm, aula)
+                     VALUES (?, ?, 1, ?, ?, ?, ?, 1)"
                 );
                 $ins->bind_param("sssssi", $novo_user, $novo_pass, $novo_nome, $novo_cpf, $novo_nasc, $novo_adm);
 
@@ -93,11 +96,11 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'editar') {
         $ed_id   = (int)($_POST['id'] ?? 0);
         $ed_user = trim($_POST['user'] ?? '');
-        $ed_pass = $_POST['pass'] ?? '';
         $ed_nome = trim($_POST['nome'] ?? '');
         $ed_cpf  = trim($_POST['cpf'] ?? '');
         $ed_nasc = $_POST['data_nasc'] ?? '';
         $ed_adm  = isset($_POST['adm']) ? 1 : 0;
+        $ed_reset_senha = isset($_POST['resetar_senha']) ? 1 : 0;
 
         if ($ed_id > 0 && $ed_user !== '' && $ed_nome !== '' && $ed_cpf !== '' && $ed_nasc !== '' && cpf_valido($ed_cpf)) {
             // Verifica se o usuário já pertence a OUTRO aluno (user é UNIQUE)
@@ -112,12 +115,13 @@
             }
             $chk->close();
 
-            if ($ed_pass !== '') {
-                // Atualiza também a senha
+            if ($ed_reset_senha) {
+                // Volta a senha para o padrão "123" e força troca no próximo login
+                $senha_padrao = '123';
                 $upd = $conexao->prepare(
-                    "UPDATE alunos SET user = ?, pass = ?, nome = ?, cpf = ?, data_nasc = ?, adm = ? WHERE id = ?"
+                    "UPDATE alunos SET user = ?, pass = ?, trocar_senha = 1, nome = ?, cpf = ?, data_nasc = ?, adm = ? WHERE id = ?"
                 );
-                $upd->bind_param("sssssii", $ed_user, $ed_pass, $ed_nome, $ed_cpf, $ed_nasc, $ed_adm, $ed_id);
+                $upd->bind_param("sssssii", $ed_user, $senha_padrao, $ed_nome, $ed_cpf, $ed_nasc, $ed_adm, $ed_id);
             } else {
                 // Mantém a senha atual
                 $upd = $conexao->prepare(
@@ -242,12 +246,349 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="shortcut icon" type="imagex/png" href="https://salesianossp.org.br/ositaquera/wp-content/uploads/2024/03/wp-favicon-pvi-os-150x150.webp">
     <title>Administração</title>
 
-    <!-- Estilos do botão Cadastrar e do modal de cadastro -->
     <style>
+        /* ===================== BASE ===================== */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            color: #193e8f;
+        }
+
+        body {
+            background-color: #eee;
+        }
+
+        /* ===================== NAVBAR (padrão, igual ao index) =====================
+           Estado inicial: transparente, largura cheia, colada no topo.
+           Ao rolar (classe .scrolled via JS): vira uma pílula branca translúcida,
+           arredondada, com sombra e recuada nas laterais. */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+
+            padding: 16px 40px;
+            background-color: transparent;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            border-radius: 0;
+            box-shadow: none;
+
+            transition:
+                max-width 0.4s ease,
+                padding 0.4s ease,
+                top 0.4s ease,
+                background-color 0.4s ease,
+                backdrop-filter 0.4s ease,
+                border-radius 0.4s ease,
+                box-shadow 0.4s ease;
+        }
+
+        nav.scrolled {
+            top: 14px;
+            max-width: 1200px;
+            padding: 10px 32px;
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 9999px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo img {
+            width: 150px;
+            display: block;
+            transition: width 0.4s ease;
+        }
+
+        nav.scrolled .logo img {
+            width: 120px;
+        }
+
+        .elem ul {
+            display: flex;
+            gap: 25px;
+        }
+
+        .elem ul a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .elem ul a li {
+            list-style: none;
+            transition: color 0.3s ease;
+        }
+
+        .elem ul a li:hover {
+            color: #ea3e44;
+        }
+
+        .b_login {
+            padding: 10px 30px;
+            background-color: #193e8f;
+            font-size: 17px;
+            border: none;
+            border-radius: 25px;
+            color: #eee;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.5s ease, padding 0.4s ease;
+        }
+
+        .b_login:hover {
+            background-color: #ea3e44;
+        }
+
+        nav.scrolled .b_login {
+            padding: 8px 26px;
+        }
+
+        /* ===================== MAIN ===================== */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 110px 16px 60px;
+        }
+
+        .saudacao {
+            margin-bottom: 30px;
+        }
+
+        .saudacao h1 {
+            font-size: 40px;
+            color: #193e8f;
+        }
+
+        .saudacao p {
+            color: #333;
+            font-size: 18px;
+            margin-top: 6px;
+        }
+
+        /* ===================== ADMIN ===================== */
+        .resumo-admin {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card-num {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #193e8f;
+        }
+
+        .card-num .num {
+            display: block;
+            font-size: 38px;
+            font-weight: 700;
+            color: #193e8f;
+            line-height: 1.1;
+        }
+
+        .card-num .rot {
+            display: block;
+            margin-top: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .barra-busca {
+            margin-bottom: 24px;
+        }
+
+        .barra-busca form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .barra-busca input {
+            flex: 1;
+            min-width: 220px;
+            padding: 12px 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+        }
+
+        .barra-busca input:focus {
+            outline: none;
+            border-color: #193e8f;
+        }
+
+        .btn-buscar {
+            background: #193e8f;
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-buscar:hover { background: #142f6d; }
+
+        .btn-limpar {
+            color: #193e8f;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 12px 10px;
+        }
+
+        .btn-limpar:hover { text-decoration: underline; }
+
+        .tabela-wrap {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .tabela-admin {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+
+        .tabela-admin th,
+        .tabela-admin td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tabela-admin thead th {
+            background: #193e8f;
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        .tabela-admin .col-curso,
+        .tabela-admin .col-total { text-align: center; }
+
+        .tabela-admin tbody tr:hover { background: #f5f7fb; }
+
+        .cel-aluno { min-width: 180px; }
+
+        .nome-aluno {
+            display: block;
+            font-weight: 500;
+            color: #222;
+        }
+
+        .user-aluno {
+            display: block;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .tag-adm {
+            display: inline-block;
+            margin-top: 4px;
+            background: #ea3e44;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .cel-curso { text-align: center; min-width: 110px; }
+
+        .mini-barra {
+            height: 8px;
+            background: #e6e6e6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto 4px;
+            max-width: 90px;
+        }
+
+        .mini-preenchida {
+            height: 100%;
+            background: #193e8f;
+            border-radius: 4px;
+        }
+
+        .mini-preenchida.ok { background: #2e9e5b; }
+
+        .mini-texto {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .cel-total {
+            text-align: center;
+            font-weight: 700;
+            color: #193e8f;
+            font-size: 16px;
+        }
+
+        .vazio {
+            padding: 30px;
+            text-align: center;
+            color: #888;
+        }
+
+        /* ===================== RESPONSIVO ===================== */
+        @media (max-width: 768px) {
+            nav {
+                padding: 12px 20px;
+            }
+
+            nav.scrolled {
+                max-width: calc(100% - 24px);
+                border-radius: 24px;
+            }
+
+            .logo img,
+            nav.scrolled .logo img { width: 100px; }
+
+            .saudacao h1 { font-size: 30px; }
+
+            .resumo-admin {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .card-num .num { font-size: 30px; }
+        }
+
+        /* ===================== BOTÃO CADASTRAR + MODAIS ===================== */
         .btn-cadastrar {
             background: #1f8f4e;
             color: #fff;
@@ -268,7 +609,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, .55);
-            z-index: 1000;
+            z-index: 2000;
             align-items: center;
             justify-content: center;
             padding: 16px;
@@ -357,6 +698,16 @@
         }
         .msg-feedback.ok  { background: #e3f6e9; color: #1f7a44; }
         .msg-feedback.erro{ background: #fbe3e3; color: #a12626; }
+
+        .aviso-senha-padrao {
+            background: #eef4ff;
+            border: 1px solid #c9dbff;
+            color: #193e8f;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
 
         /* Botões de ação (editar / excluir) na coluna Total */
         .total-wrap {
@@ -583,9 +934,9 @@
                            value="<?= htmlspecialchars($_POST['user'] ?? '') ?>" required>
                 </div>
 
-                <div class="campo">
-                    <label for="c_pass">Senha</label>
-                    <input type="password" id="c_pass" name="pass" maxlength="255" required>
+                <div class="aviso-senha-padrao">
+                    🔑 A senha inicial deste aluno será <strong>123</strong>. Ele será obrigado a
+                    trocá-la no primeiro acesso.
                 </div>
 
                 <div class="campo">
@@ -635,10 +986,9 @@
                     <input type="text" id="e_user" name="user" maxlength="25" required>
                 </div>
 
-                <div class="campo">
-                    <label for="e_pass">Senha</label>
-                    <input type="password" id="e_pass" name="pass" maxlength="255"
-                           placeholder="Deixe em branco para manter a senha atual">
+                <div class="campo-check">
+                    <input type="checkbox" id="e_resetar_senha" name="resetar_senha" value="1">
+                    <label for="e_resetar_senha">Resetar senha para o padrão (123) — aluno terá que trocá-la no próximo login</label>
                 </div>
 
                 <div class="campo">
@@ -666,6 +1016,19 @@
     </div>
 
     <script>
+        // ===== Efeito de encolher/opacar a navbar ao rolar =====
+        const navbar = document.querySelector("nav");
+        function handleNavScroll() {
+            if (window.scrollY > 40) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        }
+        window.addEventListener("scroll", handleNavScroll);
+        handleNavScroll();
+
+        /* -------- Modal de cadastro -------- */
         const modalCadastro = document.getElementById('modalCadastro');
 
         function abrirModalCadastro() {
@@ -689,7 +1052,7 @@
             document.getElementById('e_user').value = btn.dataset.user;
             document.getElementById('e_cpf').value  = btn.dataset.cpf;
             document.getElementById('e_nasc').value = btn.dataset.nasc;
-            document.getElementById('e_pass').value = '';
+            document.getElementById('e_resetar_senha').checked = false;
             document.getElementById('e_adm').checked = btn.dataset.adm === '1';
             modalEditar.classList.add('aberto');
         }

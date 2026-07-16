@@ -23,7 +23,21 @@ $CURSOS = [
         'aulas'     => [
             [
                 'titulo'  => 'O que é um computador',
-                'conteudo'=> '<p>Nesta aula você vai conhecer as partes de um computador: monitor, teclado, mouse e gabinete. Entenda para que serve cada uma delas no dia a dia.</p>',
+                'conteudo'=> '<p>Um computador é um equipamento eletrônico capaz de receber informações, processá-las e apresentar um resultado.
+                <br>
+                <br>
+                Ele pode ser utilizado para: <br>
+                acessar a internet; <br>
+                estudar; <br>
+                fazer trabalhos escolares; <br>
+                conversar com outras pessoas; <br>
+                assistir vídeos; <br>
+                ouvir músicas; <br>
+                jogar; <br>
+                trabalhar. <br>
+                <br>
+                Hoje em dia, computadores estão presentes em empresas, hospitais, escolas, bancos e até mesmo em nossas casas.</p>',
+
             ],
             [
                 'titulo'  => 'Ligando e desligando com segurança',

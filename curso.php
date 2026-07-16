@@ -93,9 +93,292 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="shortcut icon" type="imagex/png" href="https://salesianossp.org.br/ositaquera/wp-content/uploads/2024/03/wp-favicon-pvi-os-150x150.webp">
     <title><?= htmlspecialchars($curso['nome']) ?> — Aula <?= $aula_num ?></title>
+    <style>
+        /* ===================== BASE ===================== */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            color: #193e8f;
+        }
+
+        body {
+            background-color: #eee;
+        }
+
+        /* ===================== NAVBAR (padrão, igual ao index) =====================
+           Estado inicial: transparente, largura cheia, colada no topo.
+           Ao rolar (classe .scrolled via JS): vira uma pílula branca translúcida,
+           arredondada, com sombra e recuada nas laterais. */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+
+            padding: 16px 40px;
+            background-color: transparent;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            border-radius: 0;
+            box-shadow: none;
+
+            transition:
+                max-width 0.4s ease,
+                padding 0.4s ease,
+                top 0.4s ease,
+                background-color 0.4s ease,
+                backdrop-filter 0.4s ease,
+                border-radius 0.4s ease,
+                box-shadow 0.4s ease;
+        }
+
+        nav.scrolled {
+            top: 14px;
+            max-width: 1200px;
+            padding: 10px 32px;
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 9999px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo img {
+            width: 150px;
+            display: block;
+            transition: width 0.4s ease;
+        }
+
+        nav.scrolled .logo img {
+            width: 120px;
+        }
+
+        .elem ul {
+            display: flex;
+            gap: 25px;
+        }
+
+        .elem ul a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .elem ul a li {
+            list-style: none;
+            transition: color 0.3s ease;
+        }
+
+        .elem ul a li:hover {
+            color: #ea3e44;
+        }
+
+        .b_login {
+            padding: 10px 30px;
+            background-color: #193e8f;
+            font-size: 17px;
+            border: none;
+            border-radius: 25px;
+            color: #eee;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.5s ease, padding 0.4s ease;
+        }
+
+        .b_login:hover {
+            background-color: #ea3e44;
+        }
+
+        nav.scrolled .b_login {
+            padding: 8px 26px;
+        }
+
+        /* ===================== MAIN ===================== */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 110px 16px 60px;
+        }
+
+        /* ===================== PÁGINA DE AULA ===================== */
+        .aula-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .aula-menu {
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 4px 14px rgba(25, 62, 143, 0.08);
+            position: sticky;
+            top: 100px;
+        }
+
+        .aula-menu h2 {
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .aula-menu ol {
+            list-style: none;
+        }
+
+        .aula-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #333;
+            transition: background-color 0.2s ease;
+        }
+
+        .aula-menu li a:hover {
+            background-color: #f2f5fc;
+        }
+
+        .aula-menu li.ativa a {
+            background-color: #f2f5fc;
+            color: #193e8f;
+            font-weight: bold;
+        }
+
+        .marcador {
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            border-radius: 50%;
+            border: 2px solid #c0c0c0;
+            display: inline-block;
+        }
+
+        .marcador.ok {
+            background-color: #2e8b57;
+            border-color: #2e8b57;
+        }
+
+        .aula-conteudo {
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 32px;
+            box-shadow: 0 4px 14px rgba(25, 62, 143, 0.08);
+        }
+
+        .aula-breadcrumb {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 12px;
+        }
+
+        .aula-breadcrumb a {
+            color: #193e8f;
+            text-decoration: none;
+        }
+
+        .aula-breadcrumb a:hover {
+            color: #ea3e44;
+        }
+
+        .aula-conteudo h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .aula-texto {
+            color: #333;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .aula-texto p {
+            color: #333;
+            margin-bottom: 14px;
+        }
+
+        .aula-acoes {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* ===================== BOTÕES DE CURSO ===================== */
+        .btn-curso {
+            display: inline-block;
+            text-align: center;
+            padding: 12px 20px;
+            background-color: #193e8f;
+            color: #eee;
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.4s ease;
+        }
+
+        .btn-curso:hover {
+            background-color: #ea3e44;
+        }
+
+        .btn-curso.secundario {
+            background-color: #c0c0c0;
+            color: #193e8f;
+        }
+
+        .btn-curso.secundario:hover {
+            background-color: #a9a9a9;
+        }
+
+        /* ===================== RESPONSIVO ===================== */
+        @media (max-width: 768px) {
+            nav {
+                padding: 12px 20px;
+            }
+
+            nav.scrolled {
+                max-width: calc(100% - 24px);
+                border-radius: 24px;
+            }
+
+            .logo img,
+            nav.scrolled .logo img { width: 100px; }
+
+            .aula-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .aula-menu {
+                position: static;
+            }
+        }
+    </style>
 </head>
 <body class="no-select">
 
@@ -138,7 +421,7 @@
             <p class="aula-breadcrumb">
                 <a href="dashboard.php">Painel</a> &rsaquo; <?= htmlspecialchars($curso['nome']) ?>
             </p>
-            <h1>Aula <?= $aula_num ?>: <?= htmlspecialchars($aula['titulo']) ?></h1>
+            <h1> <?= $aula_num ?>. <?= htmlspecialchars($aula['titulo']) ?></h1>
 
             <div class="aula-texto">
                 <?= $aula['conteudo'] // HTML controlado por você em cursos.php ?>
@@ -171,16 +454,29 @@
         </article>
 
     </main>
-    <script>
-    document.addEventListener('contextmenu', function(e) {
-    e.preventDefault(); // Impede o menu de contexto padrão
-    });
 
-    document.addEventListener('keydown', function(e) {
-    if (e.keyCode === 123) { // Código da tecla F12
-    e.preventDefault();
-    }
-    });
+    <script>
+        // Bloqueios (menu de contexto e F12)
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode === 123) { // F12
+                e.preventDefault();
+            }
+        });
+
+        // ===== Efeito de encolher/opacar a navbar ao rolar =====
+        const navbar = document.querySelector("nav");
+        function handleNavScroll() {
+            if (window.scrollY > 40) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        }
+        window.addEventListener("scroll", handleNavScroll);
+        handleNavScroll();
     </script>
 </body>
 </html>

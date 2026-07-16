@@ -10,7 +10,7 @@
 
         /* Prepared statement: evita SQL injection.
            Buscamos o aluno só pelo usuário e conferimos a senha no PHP. */
-        $sql = "SELECT id, nome, user, pass, adm FROM alunos WHERE user = ? LIMIT 1";
+        $sql = "SELECT id, nome, user, pass, adm, trocar_senha FROM alunos WHERE user = ? LIMIT 1";
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("s", $user);
         $stmt->execute();
@@ -44,22 +44,23 @@
             if ($senha_ok) {
                 // Login válido: guarda os dados na sessão
                 session_regenerate_id(true);
-                $_SESSION['aluno_id']   = $aluno['id'];
-                $_SESSION['aluno_nome'] = $aluno['nome'];
-                $_SESSION['aluno_user'] = $aluno['user'];
-                $_SESSION['adm']        = $aluno['adm'];
+                $_SESSION['aluno_id']     = $aluno['id'];
+                $_SESSION['aluno_nome']   = $aluno['nome'];
+                $_SESSION['aluno_user']   = $aluno['user'];
+                $_SESSION['adm']          = $aluno['adm'];
+                $_SESSION['trocar_senha'] = (int)$aluno['trocar_senha'];
 
                 header('Location: dashboard.php');
                 exit;
             }
         }
 
-        // Usuário ou senha incorretos
-        header('Location: login.php?erro=1');
+        // Usuário ou senha incorretos: volta para a home reabrindo o modal
+        header('Location: index.php?erro=1');
         exit;
 
     } else {
-        header('Location: login.php');
+        header('Location: index.php');
         exit;
     }
 ?>
