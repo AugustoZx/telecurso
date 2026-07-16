@@ -1,9 +1,13 @@
+-- ATENÇÃO
+-- NÃO SE ESQUEÇA DE CRIAR O BANCO DE DADOS ANTES DE IMPORTAR ESTE ARQUIVO SQL, POIS ELE NÃO CRIA O BANCO DE DADOS AUTOMATICAMENTE.
+-- DB APENAS COM 1 USUÁRIO ADMINISTRADOR PARA TESTES (USUÁRIO = adm_teste / SENHA = 123, SERÁ NECESSÁRIO ALTERAR SENHA APÓS PRIMEIRO LOGIN)
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16/07/2026 às 14:42
+-- Tempo de geração: 16/07/2026 às 22:10
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -31,6 +35,7 @@ CREATE TABLE `alunos` (
   `id` int(11) NOT NULL,
   `user` varchar(25) NOT NULL,
   `pass` varchar(255) NOT NULL,
+  `trocar_senha` tinyint(1) NOT NULL DEFAULT 1,
   `nome` varchar(164) NOT NULL,
   `cpf` varchar(15) NOT NULL,
   `data_nasc` date NOT NULL,
@@ -42,28 +47,8 @@ CREATE TABLE `alunos` (
 -- Despejando dados para a tabela `alunos`
 --
 
-INSERT INTO `alunos` (`id`, `user`, `pass`, `nome`, `cpf`, `data_nasc`, `adm`, `aula`) VALUES
-(1, 'adm_teste', '$2y$10$7CNYdM2D/VH9G7fF/rtft.6dWAb6ZHtweynvJYjIJHDjtXgM9aJVi', 'Teste DB', '000.000.000-00', '2000-01-01', 1, 1),
-(2, 'joao.silva', '123', 'João Silva', '123.456.789-01', '1998-03-15', 0, 1),
-(3, 'maria.souza', '123', 'Maria Souza', '234.567.890-12', '1995-07-22', 0, 1),
-(4, 'pedro.lima', '123', 'Pedro Lima', '345.678.901-23', '2000-01-10', 0, 1),
-(5, 'ana.costa', '123', 'Ana Costa', '456.789.012-34', '1997-11-05', 0, 1),
-(6, 'lucas.oliveira', '123', 'Lucas Oliveira', '567.890.123-45', '1999-06-18', 0, 1),
-(7, 'juliana.rocha', '123', 'Juliana Rocha', '678.901.234-56', '1996-04-27', 0, 1),
-(8, 'rafael.almeida', '123', 'Rafael Almeida', '789.012.345-67', '1994-09-12', 0, 1),
-(9, 'camila.ribeiro', '123', 'Camila Ribeiro', '890.123.456-78', '2001-02-08', 0, 1),
-(10, 'bruno.martins', '123', 'Bruno Martins', '901.234.567-89', '1993-12-30', 0, 1),
-(11, 'fernanda.gomes', '123', 'Fernanda Gomes', '012.345.678-90', '1998-08-14', 0, 1),
-(12, 'thiago.barros', '123', 'Thiago Barros', '135.246.357-91', '1997-05-03', 0, 1),
-(13, 'patricia.melo', '123', 'Patrícia Melo', '246.357.468-02', '1992-10-19', 0, 1),
-(14, 'gabriel.santos', '123', 'Gabriel Santos', '357.468.579-13', '2002-01-25', 0, 1),
-(15, 'beatriz.ferreira', '123', 'Beatriz Ferreira', '468.579.680-24', '1999-07-09', 0, 1),
-(16, 'felipe.cardoso', '123', 'Felipe Cardoso', '579.680.791-35', '1996-03-21', 0, 1),
-(17, 'larissa.teixeira', '123', 'Larissa Teixeira', '680.791.802-46', '1995-12-11', 0, 1),
-(18, 'daniel.pereira', '123', 'Daniel Pereira', '791.802.913-57', '1994-04-06', 0, 1),
-(19, 'renata.nunes', '123', 'Renata Nunes', '802.913.024-68', '2000-09-28', 0, 1),
-(20, 'vinicius.araujo', '123', 'Vinícius Araújo', '913.024.135-79', '1998-02-17', 0, 1),
-(21, 'carolina.moraes', '123', 'Carolina Moraes', '024.135.246-80', '1997-06-01', 0, 1);
+INSERT INTO `alunos` (`id`, `user`, `pass`, `trocar_senha`, `nome`, `cpf`, `data_nasc`, `adm`, `aula`) VALUES
+(1, 'adm_teste', '123', 1, 'DB Teste', '000.000.000.00', '2000-01-01', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -120,7 +105,8 @@ CREATE TABLE `quiz_resultados` (
 --
 ALTER TABLE `alunos`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user` (`user`);
+  ADD UNIQUE KEY `user` (`user`),
+  ADD UNIQUE KEY `cpf` (`cpf`);
 
 --
 -- Índices de tabela `aulas_concluidas`
@@ -152,7 +138,7 @@ ALTER TABLE `quiz_resultados`
 -- AUTO_INCREMENT de tabela `alunos`
 --
 ALTER TABLE `alunos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `aulas_concluidas`

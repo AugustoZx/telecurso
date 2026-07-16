@@ -586,125 +586,177 @@
             }
 
             .card-num .num { font-size: 30px; }
+
+            .modal-box {
+                padding: 32px 24px;
+            }
         }
 
         /* ===================== BOTÃO CADASTRAR + MODAIS ===================== */
+        /* Mesmo visual do modal de login (index.php): overlay azul com blur,
+           card branco arredondado, inputs e botão no mesmo padrão de cores. */
         .btn-cadastrar {
-            background: #1f8f4e;
+            background: #193e8f;
             color: #fff;
             border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            transition: background .2s ease;
         }
-        .btn-cadastrar:hover { background: #17703d; }
+        .btn-cadastrar:hover { background: #142f6d; }
 
         /* Overlay do modal */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, .55);
             z-index: 2000;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 20px;
+            background-color: rgba(25, 62, 143, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .modal-overlay.aberto { display: flex; }
+        .modal-overlay.aberto {
+            display: flex;
+            opacity: 1;
+        }
 
         .modal-box {
-            background: #fff;
+            background-color: #ffffff;
             width: 100%;
             max-width: 460px;
-            border-radius: 10px;
-            padding: 24px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+            border-radius: 20px;
+            padding: 44px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
             font-family: 'Roboto', sans-serif;
             max-height: 90vh;
             overflow-y: auto;
+            transform: translateY(20px) scale(0.98);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.aberto .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-topo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 6px;
         }
         .modal-box h2 {
-            margin: 0 0 4px;
-            font-size: 20px;
-            color: #222;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #193e8f;
         }
         .modal-box .modal-sub {
-            margin: 0 0 18px;
-            font-size: 14px;
+            margin: 0 0 26px;
+            font-size: 15px;
             color: #666;
         }
+
+        .btn-fechar-modal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #193e8f;
+            background-color: #eef1f8;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.3s ease;
+        }
+        .btn-fechar-modal:hover { background-color: #dfe4f2; }
+
         .modal-box label {
             display: block;
             font-size: 13px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
+            font-weight: bold;
+            color: #193e8f;
+            margin-bottom: 6px;
         }
-        .modal-box .campo { margin-bottom: 14px; }
+        .modal-box .campo { margin-bottom: 16px; }
         .modal-box input[type="text"],
         .modal-box input[type="password"],
         .modal-box input[type="date"] {
             width: 100%;
-            padding: 9px 10px;
-            border: 1px solid #cfcfcf;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 14px 16px;
+            font-size: 15px;
+            color: #193e8f;
+            background-color: #f4f6fb;
+            border: 1px solid #dfe4f2;
+            border-radius: 10px;
+            outline: none;
             box-sizing: border-box;
             font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .modal-box input::placeholder {
+            color: #9aa3bd;
+        }
+        .modal-box input:focus {
+            border-color: #193e8f;
+            box-shadow: 0 0 0 3px rgba(25, 62, 143, 0.15);
         }
         .modal-box .campo-check {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
         }
-        .modal-box .campo-check label { margin: 0; }
-        .modal-acoes {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+        .modal-box .campo-check input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #193e8f;
+            cursor: pointer;
         }
+        .modal-box .campo-check label { margin: 0; cursor: pointer; }
+
+        .modal-acoes { margin-top: 8px; }
         .modal-acoes .btn-salvar {
-            background: #1f8f4e;
-            color: #fff;
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #193e8f;
             border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: background-color 0.4s ease;
         }
-        .modal-acoes .btn-salvar:hover { background: #17703d; }
-        .modal-acoes .btn-cancelar {
-            background: #eee;
-            color: #333;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .modal-acoes .btn-cancelar:hover { background: #ddd; }
+        .modal-acoes .btn-salvar:hover { background-color: #ea3e44; }
 
         /* Mensagens de feedback */
         .msg-feedback {
             padding: 10px 14px;
-            border-radius: 6px;
-            margin-bottom: 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
             font-size: 14px;
+            font-weight: bold;
         }
         .msg-feedback.ok  { background: #e3f6e9; color: #1f7a44; }
-        .msg-feedback.erro{ background: #fbe3e3; color: #a12626; }
+        .msg-feedback.erro{ background-color: #fdeaea; color: #ea3e44; border: 1px solid #f5c6c8; }
 
         .aviso-senha-padrao {
             background: #eef4ff;
             border: 1px solid #c9dbff;
             color: #193e8f;
             padding: 10px 14px;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 13px;
             margin-bottom: 16px;
         }
@@ -912,7 +964,10 @@
     <!-- Popup / Modal de cadastro de aluno -->
     <div class="modal-overlay <?= $abrir_modal ? 'aberto' : '' ?>" id="modalCadastro">
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="tituloModal">
-            <h2 id="tituloModal">Cadastrar novo aluno</h2>
+            <div class="modal-topo">
+                <h2 id="tituloModal">Cadastrar novo aluno</h2>
+                <button type="button" class="btn-fechar-modal" onclick="fecharModalCadastro()">Cancelar</button>
+            </div>
             <p class="modal-sub">Preencha os dados do aluno abaixo.</p>
 
             <?php if ($cadastro_erro && $cadastro_msg !== ''): ?>
@@ -959,7 +1014,6 @@
                 </div>
 
                 <div class="modal-acoes">
-                    <button type="button" class="btn-cancelar" onclick="fecharModalCadastro()">Cancelar</button>
                     <button type="submit" class="btn-salvar">Salvar aluno</button>
                 </div>
             </form>
@@ -969,7 +1023,10 @@
     <!-- Popup / Modal de EDIÇÃO de aluno -->
     <div class="modal-overlay" id="modalEditar">
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="tituloModalEditar">
-            <h2 id="tituloModalEditar">Editar aluno</h2>
+            <div class="modal-topo">
+                <h2 id="tituloModalEditar">Editar aluno</h2>
+                <button type="button" class="btn-fechar-modal" onclick="fecharModalEditar()">Cancelar</button>
+            </div>
             <p class="modal-sub">Altere os dados do aluno abaixo.</p>
 
             <form method="post" action="admin.php">
@@ -1008,7 +1065,6 @@
                 </div>
 
                 <div class="modal-acoes">
-                    <button type="button" class="btn-cancelar" onclick="fecharModalEditar()">Cancelar</button>
                     <button type="submit" class="btn-salvar">Salvar alterações</button>
                 </div>
             </form>
