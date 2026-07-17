@@ -55,9 +55,9 @@ $CURSOS = [
     ],
 
     'atalhos' => [
-        'nome'      => 'Atalhos do Teclado',
+        'nome'      => 'Teclado e Mouse',
         'imagem'    => 'img/keyboard.png',
-        'descricao' => 'Combinações de teclas que agilizam o trabalho no computador sem precisar do mouse.',
+        'descricao' => 'Combinações de teclas que agilizam o trabalho no computador e funções do mouse que facilitam a navegação e a execução de tarefas.',
         'aulas'     => [
             [
                 'titulo'  => 'Copiar, colar e recortar',
