@@ -3,7 +3,7 @@
 
     /* -------- Proteção dupla: precisa estar logado E ser admin -------- */
     if (!isset($_SESSION['aluno_id'])) {
-        header('Location: login.php');
+        header('Location: index.php');
         exit;
     }
     if (empty($_SESSION['adm']) || (int)$_SESSION['adm'] !== 1) {
@@ -14,6 +14,8 @@
 
     include_once('config.php');
     include_once('cursos.php');
+
+    $CURSOS = buscar_cursos_ativos($conexao);
 
     /* -------- Validação matemática do CPF (dígitos verificadores) -------- */
     function cpf_valido($cpf) {
@@ -212,16 +214,33 @@
         }
     }
 
-    /* -------- Alunos que concluíram a ÚLTIMA aula do curso de Excel --------
-       Regra do certificado: curso_id = 'excel' e aula_num = 3.
-       Guardamos a data de conclusão para exibir no certificado. */
-    $concluiu_excel = []; // aluno_id => data de conclusão
-    $rc = $conexao->query("SELECT aluno_id, `data`
-                           FROM aulas_concluidas
-                           WHERE curso_id = 'excel' AND aula_num = 3");
-    if ($rc) {
-        while ($l = $rc->fetch_assoc()) {
-            $concluiu_excel[(int)$l['aluno_id']] = $l['data'];
+    /* -------- Alunos que concluíram o curso marcado como "gera certificado" --------
+       Concluir = todas as aulas desse curso + quiz aprovado (quando houver quiz). */
+    $concluiu_certificado = []; // aluno_id => true
+    $curso_cert_slug = null;
+    foreach ($CURSOS as $slug => $c) {
+        if ((int) $c['certifica_conclusao'] === 1) { $curso_cert_slug = $slug; break; }
+    }
+    if ($curso_cert_slug !== null) {
+        $total_cert = total_aulas($CURSOS, $curso_cert_slug);
+        $tem_quiz_cert = curso_tem_quiz($CURSOS, $curso_cert_slug);
+        $nota_min_cert = $CURSOS[$curso_cert_slug]['nota_minima_quiz'];
+
+        $quiz_melhor = []; // aluno_id => melhor percentual no quiz desse curso
+        $rq = $conexao->prepare("SELECT aluno_id, MAX(percentual) AS melhor FROM quiz_resultados WHERE curso_id = ? GROUP BY aluno_id");
+        $rq->bind_param("s", $curso_cert_slug);
+        $rq->execute();
+        $resq = $rq->get_result();
+        while ($l = $resq->fetch_assoc()) {
+            $quiz_melhor[(int) $l['aluno_id']] = (float) $l['melhor'];
+        }
+
+        foreach ($prog as $aid => $porCurso) {
+            $feitas = $porCurso[$curso_cert_slug] ?? 0;
+            if ($total_cert > 0 && $feitas >= $total_cert) {
+                $aprovado_quiz = !$tem_quiz_cert || (($quiz_melhor[$aid] ?? 0) >= $nota_min_cert);
+                if ($aprovado_quiz) $concluiu_certificado[(int) $aid] = true;
+            }
         }
     }
 
@@ -816,6 +835,7 @@
         <div class="elem">
             <ul>
                 <a href="admin.php"><li>ADMIN</li></a>
+                <a href="admin_cursos.php"><li>CONTEÚDO</li></a>
                 <a href="dashboard.php"><li>MEU PAINEL</li></a>
                 <a href="index.php"><li>INÍCIO</li></a>
             </ul>
@@ -933,7 +953,7 @@
                                             data-adm="<?= (int)$aluno['adm'] ?>"
                                             onclick="abrirModalEditar(this)">Editar</button>
 
-                                        <?php if (isset($concluiu_excel[(int)$aluno['id']])): ?>
+                                        <?php if (isset($concluiu_certificado[(int)$aluno['id']])): ?>
                                             <a class="btn-acao btn-certificado"
                                                href="certificado.php?aluno_id=<?= (int)$aluno['id'] ?>"
                                                target="_blank" rel="noopener"

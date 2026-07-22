@@ -1,0 +1,16 @@
+# Backups do banco de dados (podem conter dados pessoais de alunos)
+/sql/backups/
+
+# Arquivos enviados pelo painel (imagens/vídeos de aula, capas de curso)
+/uploads/aulas/*
+!/uploads/aulas/.htaccess
+!/uploads/aulas/index.html
+/uploads/cursos/*
+!/uploads/cursos/.htaccess
+!/uploads/cursos/index.html
+
+# Certificados gerados em PDF (dados pessoais dos alunos)
+/certificados/*.pdf
+
+# Artefatos de teste manual (curl, cookies)
+_test*.txt

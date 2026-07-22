@@ -1,5 +1,6 @@
 -- ATENÇÃO
 -- ESSE ARQUIVO SQL É APENAS PARA RESETAR O BANCO DE DADOS, NÃO CRIANDO NENHUMA TABELA OU DADOS NOVOS. ELE APAGA TODOS OS DADOS EXISTENTES E ZERA OS CONTADORES DE AUTO_INCREMENT.
+-- ISSO INCLUI O CONTEÚDO CADASTRADO NO PAINEL (cursos, aulas, perguntas de quiz) -- não é só o progresso dos alunos.
 
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -9,11 +10,19 @@ DELETE FROM aulas_concluidas;
 DELETE FROM certificados;
 DELETE FROM alunos;
 DELETE FROM quiz_resultados;
+DELETE FROM quiz_opcoes;
+DELETE FROM quiz_perguntas;
+DELETE FROM aulas;
+DELETE FROM cursos;
 
 -- Zera os contadores manualmente (DELETE não reseta sozinho, diferente do TRUNCATE)
 ALTER TABLE aulas_concluidas AUTO_INCREMENT = 1;
 ALTER TABLE certificados AUTO_INCREMENT = 1;
 ALTER TABLE alunos AUTO_INCREMENT = 1;
 ALTER TABLE quiz_resultados AUTO_INCREMENT = 1;
+ALTER TABLE quiz_opcoes AUTO_INCREMENT = 1;
+ALTER TABLE quiz_perguntas AUTO_INCREMENT = 1;
+ALTER TABLE aulas AUTO_INCREMENT = 1;
+ALTER TABLE cursos AUTO_INCREMENT = 1;
 
 SET FOREIGN_KEY_CHECKS = 1;

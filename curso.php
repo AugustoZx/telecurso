@@ -3,12 +3,14 @@
 
     /* -------- Proteção: só entra quem está logado -------- */
     if (!isset($_SESSION['aluno_id'])) {
-        header('Location: login.php');
+        header('Location: index.php');
         exit;
     }
 
     include_once('config.php');
     include_once('cursos.php');
+
+    $CURSOS = buscar_cursos_ativos($conexao);
 
     $aluno_id = $_SESSION['aluno_id'];
 
@@ -40,10 +42,12 @@
             $stmt->execute();
         }
 
-        // Redireciona para a próxima aula (ou volta ao painel se acabou)
+        // Redireciona para a próxima aula, para o quiz (se houver) ou de volta ao painel
         $total = total_aulas($CURSOS, $curso_id);
         if ($aula_num < $total) {
             header('Location: curso.php?curso=' . urlencode($curso_id) . '&aula=' . ($aula_num + 1));
+        } elseif (curso_tem_quiz($CURSOS, $curso_id)) {
+            header('Location: quiz.php?curso=' . urlencode($curso_id));
         } else {
             header('Location: dashboard.php?concluido=' . urlencode($curso_id));
         }
@@ -317,6 +321,12 @@
             margin-bottom: 14px;
         }
 
+        .aula-texto img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
         .aula-acoes {
             display: flex;
             align-items: center;
@@ -424,7 +434,15 @@
             <h1> <?= $aula_num ?>. <?= htmlspecialchars($aula['titulo']) ?></h1>
 
             <div class="aula-texto">
-                <?= $aula['conteudo'] // HTML controlado por você em cursos.php ?>
+                <?php if ($aula['midia_tipo'] === 'imagem' && $aula['midia_arquivo']): ?>
+                    <img src="<?= htmlspecialchars($aula['midia_arquivo']) ?>" alt=""
+                         style="max-width:100%;border-radius:10px;margin-bottom:16px;">
+                <?php elseif ($aula['midia_tipo'] === 'video' && $aula['midia_arquivo']): ?>
+                    <video controls style="max-width:100%;border-radius:10px;margin-bottom:16px;">
+                        <source src="<?= htmlspecialchars($aula['midia_arquivo']) ?>">
+                    </video>
+                <?php endif; ?>
+                <?= $aula['conteudo'] // HTML sanitizado, vindo do painel admin (admin_cursos.php) ?>
             </div>
 
             <div class="aula-acoes">
@@ -445,6 +463,8 @@
                     <button type="submit" name="concluir" class="btn-curso">
                         <?php if ($aula_num < $total): ?>
                             <?= $aula_concluida ? 'Próxima aula →' : 'Concluir e continuar →' ?>
+                        <?php elseif (curso_tem_quiz($CURSOS, $curso_id)): ?>
+                            Ir para o quiz →
                         <?php else: ?>
                             <?= $aula_concluida ? 'Voltar ao painel' : 'Concluir curso' ?>
                         <?php endif; ?>

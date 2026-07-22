@@ -1,6 +1,8 @@
 -- ATENÇÃO
 -- NÃO SE ESQUEÇA DE CRIAR O BANCO DE DADOS ANTES DE IMPORTAR ESTE ARQUIVO SQL, POIS ELE NÃO CRIA O BANCO DE DADOS AUTOMATICAMENTE.
 -- DB APENAS COM 1 USUÁRIO ADMINISTRADOR PARA TESTES (USUÁRIO = adm_teste / SENHA = 123, SERÁ NECESSÁRIO ALTERAR SENHA APÓS PRIMEIRO LOGIN)
+-- ESTE ARQUIVO JÁ INCLUI O SCHEMA COMPLETO: alunos/aulas_concluidas/certificados/quiz_resultados (progresso e contas)
+-- E cursos/aulas/quiz_perguntas/quiz_opcoes (conteúdo editável pelo painel admin_cursos.php). Uma importação só é suficiente.
 
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
@@ -180,6 +182,83 @@ ALTER TABLE `certificados`
 ALTER TABLE `quiz_resultados`
   ADD CONSTRAINT `fk_quiz_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `alunos` (`id`) ON DELETE CASCADE;
 COMMIT;
+
+-- --------------------------------------------------------
+-- ============================================================
+-- Schema v2: cursos/aulas/quiz editáveis pelo painel admin_cursos.php
+-- ------------------------------------------------------------
+-- Tabelas ADITIVAS: não alteram alunos, aulas_concluidas,
+-- certificados nem quiz_resultados (definidas acima).
+--
+-- cursos.slug guarda o MESMO valor usado como curso_id em
+-- aulas_concluidas/certificados/quiz_resultados (ex.: 'informatica',
+-- 'atalhos', 'word', 'excel'), para que o progresso dos alunos
+-- continue batendo sem precisar migrar essas tabelas.
+-- ============================================================
+
+CREATE TABLE `cursos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(50) NOT NULL,
+  `nome` varchar(191) NOT NULL,
+  `descricao` text NOT NULL,
+  `imagem` varchar(255) NOT NULL,
+  `ordem` int(11) NOT NULL DEFAULT 0,
+  `nota_minima_quiz` tinyint(3) unsigned NOT NULL DEFAULT 70,
+  `certifica_conclusao` tinyint(1) NOT NULL DEFAULT 0,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `cursos`
+-- (os 4 módulos da trilha; as aulas de cada um são cadastradas pelo
+-- painel admin_cursos.php depois da instalação)
+--
+
+INSERT INTO `cursos` (`id`, `slug`, `nome`, `descricao`, `imagem`, `ordem`, `nota_minima_quiz`, `certifica_conclusao`, `ativo`) VALUES
+(1, 'informatica', 'Informática Básica', 'Conhecimentos fundamentais sobre o uso de computadores: navegação na internet, uso de programas e conceitos básicos de segurança.', 'img/computer.png', 1, 70, 0, 1),
+(2, 'atalhos', 'Teclado e Mouse', 'Combinações de teclas que agilizam o trabalho no computador e funções do mouse que facilitam a navegação e a execução de tarefas.', 'img/keyboard.png', 2, 70, 0, 1),
+(3, 'word', 'Microsoft Word', 'Editor de texto para criar, editar e formatar documentos de forma fácil e eficiente.', 'img/microsoft-word.png', 3, 70, 0, 1),
+(4, 'excel', 'Microsoft Excel', 'Planilha eletrônica para organizar, calcular e analisar dados com tabelas, gráficos e fórmulas.', 'img/microsoft-exel.png', 4, 70, 1, 1);
+
+ALTER TABLE `cursos` AUTO_INCREMENT = 5;
+
+CREATE TABLE `aulas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `curso_id` int(11) NOT NULL,
+  `ordem` int(11) NOT NULL,
+  `titulo` varchar(255) NOT NULL,
+  `conteudo` mediumtext NOT NULL,
+  `midia_tipo` enum('nenhuma','imagem','video') NOT NULL DEFAULT 'nenhuma',
+  `midia_arquivo` varchar(255) DEFAULT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_curso_ordem` (`curso_id`,`ordem`),
+  CONSTRAINT `fk_aula_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `quiz_perguntas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `curso_id` int(11) NOT NULL,
+  `enunciado` text NOT NULL,
+  `ordem` int(11) NOT NULL DEFAULT 0,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_pergunta_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `quiz_opcoes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pergunta_id` int(11) NOT NULL,
+  `texto` varchar(500) NOT NULL,
+  `correta` tinyint(1) NOT NULL DEFAULT 0,
+  `ordem` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_opcao_pergunta` FOREIGN KEY (`pergunta_id`) REFERENCES `quiz_perguntas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

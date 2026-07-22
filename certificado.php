@@ -3,7 +3,7 @@
 
     /* -------- Proteção: precisa estar logado E ser administrador -------- */
     if (!isset($_SESSION['aluno_id'])) {
-        header('Location: login.php');
+        header('Location: index.php');
         exit;
     }
     if (empty($_SESSION['adm']) || (int)$_SESSION['adm'] !== 1) {
@@ -12,6 +12,7 @@
     }
 
     include_once('config.php');
+    include_once('cursos.php');
 
     /* -------- Biblioteca FPDF (instalada via Composer) --------
        Rode uma vez na pasta do projeto:  composer require setasign/fpdf */
@@ -23,14 +24,22 @@
     require_once $autoload;
 
     /* ==================================================================
-       Configuração do certificado (curso de Excel / Informática Básica)
+       Configuração do certificado — o curso alvo é o que estiver marcado
+       como "certifica_conclusao" no painel admin_cursos.php (não é mais
+       fixo em 'excel').
     ================================================================== */
-    $CURSO_ID        = 'excel';              // curso alvo
-    $CURSO_AULA_FINAL = 3;                    // última aula que libera o certificado
-    $CURSO_NOME      = 'Informática Básica';  // nome impresso no certificado
-    $CARGA_HORARIA   = '30 horas';            // carga horária impressa
-    $DIR_CERT        = __DIR__ . '/certificados'; // pasta onde os PDFs ficam salvos
-    $MODELO          = __DIR__ . '/img/certificado_modelo.png'; // fundo do certificado
+    $CARGA_HORARIA = '30 horas'; // carga horária impressa
+    $DIR_CERT      = __DIR__ . '/certificados'; // pasta onde os PDFs ficam salvos
+    $MODELO        = __DIR__ . '/img/certificado_modelo.png'; // fundo do certificado
+
+    $res = $conexao->query("SELECT slug, nome FROM cursos WHERE certifica_conclusao = 1 AND ativo = 1 LIMIT 1");
+    $curso_cert = $res->fetch_assoc();
+    if (!$curso_cert) {
+        header('Location: admin.php?cert=erro');
+        exit;
+    }
+    $CURSO_ID   = $curso_cert['slug'];
+    $CURSO_NOME = $curso_cert['nome'];
 
     $aluno_id = isset($_GET['aluno_id']) ? (int)$_GET['aluno_id'] : 0;
     if ($aluno_id <= 0) {
@@ -50,7 +59,17 @@
         exit;
     }
 
-    /* -------- Verifica se concluiu a última aula do curso -------- */
+    /* -------- Verifica se o curso foi concluído: todas as aulas + quiz aprovado (se houver) -------- */
+    $CURSOS    = buscar_cursos_ativos($conexao);
+    $progresso = buscar_progresso($conexao, $aluno_id);
+
+    if (!curso_concluido($CURSOS, $CURSO_ID, $progresso)) {
+        header('Location: admin.php?cert=incompleto');
+        exit;
+    }
+
+    $CURSO_AULA_FINAL = total_aulas($CURSOS, $CURSO_ID);
+
     $stmt = $conexao->prepare(
         "SELECT `data` FROM aulas_concluidas
          WHERE aluno_id = ? AND curso_id = ? AND aula_num = ?
@@ -60,11 +79,6 @@
     $stmt->execute();
     $conclusao = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-
-    if (!$conclusao) {
-        header('Location: admin.php?cert=incompleto');
-        exit;
-    }
 
     // Data de conclusão (fallback para a data atual, se vier vazia)
     $data_conclusao = !empty($conclusao['data']) ? strtotime($conclusao['data']) : time();

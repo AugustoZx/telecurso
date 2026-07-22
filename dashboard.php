@@ -3,12 +3,14 @@
 
     /* -------- Proteção: só entra quem está logado -------- */
     if (!isset($_SESSION['aluno_id'])) {
-        header('Location: login.php');
+        header('Location: index.php');
         exit;
     }
 
     include_once('config.php');
     include_once('cursos.php');
+
+    $CURSOS = buscar_cursos_ativos($conexao);
 
     $aluno_id   = $_SESSION['aluno_id'];
     $aluno_nome = $_SESSION['aluno_nome'] ?? $_SESSION['aluno_user'] ?? 'Aluno';
